@@ -3,15 +3,14 @@
 Here you'll find a few snippets of mostly dev/experimental/sandbox code. Although I've put a couple of these projects on pypi, I don't maintain any of them, so this is mainly a personal code journal that I occasionally turn to for inspiration in my "real" work.
 
 
-## Installation
+== Installation
 
-To install the `zkurtz/zkurtz/src` python package:
+To install the `zkurtz/zkurtz/src` python package. First clone this repo, cd into it, and then:
 
 ----[source,bash]
-# clone, cd into this directory, then:
 pip install -e .
 pip install -r requirements.txt
 
-# to be able to run notebooks, register the kernel. This assumes your virtualenv name is "zkurtz":
 ipython kernel install --user --name zkurtz
 ----
+The last line above register the jupyter kernel to be able to run notebooks; this assumes your virtualenv name is "zkurtz".
