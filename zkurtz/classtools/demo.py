@@ -31,6 +31,15 @@ def demo() -> None:
     for name, value in MyPaths:
         print(f"    MyPaths.{name} = {value}")
 
+    # __iter__ is defined in the class such that we can convert it directly to a dict:
+    assert dict(MyPaths) == {
+        "inputs": "input/path",
+        "outputs": "output/path",
+    }
+
+    # The class inherited from the "Base" class with a greetings property:
+    assert MyPaths.greetings == "Hello, world!"
+
     print("Item assignment like MyPaths.inputs = 'new/path' raises FrozenInstanceError")
     with raises(FrozenInstanceError):
         MyPaths.inputs = "new/path"  # pyright: ignore[reportAttributeAccessIssue]
