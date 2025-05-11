@@ -38,6 +38,9 @@ replace = 'version = "{new_version}"'
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.build.targets.wheel]
+packages = ["zkurtz"]
+
 [tool.pytest.ini_options]
 testpaths = ["zkurtz",]
 addopts = "--import-mode=importlib"

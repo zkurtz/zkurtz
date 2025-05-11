@@ -10,15 +10,7 @@ Illustrate the functionality in this module by running the demo:
 """
 
 from dataclasses import dataclass, fields
-from typing import Any, Callable, Iterator, Protocol, Type
-
-
-class IterableConstant(Protocol):
-    """Protocol for a class that can be iterated over to get its fields and values."""
-
-    def __iter__(self: Any) -> Iterator[tuple[str, Any]]:
-        """Iterator over the fields and values of the class."""
-        ...
+from typing import Any, Callable, Iterator, Type
 
 
 def _get_simple_attributes(cls: Type) -> list[str]:
@@ -32,27 +24,21 @@ def _get_simple_attributes(cls: Type) -> list[str]:
         # Skip built-in magic attributes
         if name.startswith("__") and name.endswith("__"):
             continue
-        # Skip functions defined using 'def' within the scope of the class
+        # Skip functions defined using 'def' within the scope of the class or any parent class
         if isinstance(value, Callable):
-            if value.__qualname__.startswith(cls.__name__ + "."):
+            if any(value.__qualname__.startswith(base.__name__ + ".") for base in cls.__mro__):
                 continue
         names.append(name)
     return names
 
 
-def _append_fields_iterator(cls: Type) -> object:
-    """Decorator to add an iterator to a class that iterates over its fields."""
-
-    def __iter__(self: Any) -> Iterator[tuple[str, Any]]:
-        """Iterate over the field names of the dataclass."""
-        for field in fields(self):
-            yield field.name, field.default
-
-    cls.__iter__ = __iter__
-    return cls
+def _default_iterator(self: Any) -> Iterator[tuple[str, Any]]:
+    """Iterate over the field names of the dataclass."""
+    for field in fields(self):
+        yield field.name, field.default
 
 
-def constant(cls: Type) -> IterableConstant:
+def constant(cls: Any) -> Any:
     """Decorator to render a class declaration into into a frozen class instance."""
     for name in _get_simple_attributes(cls):
         if name in cls.__annotations__:
@@ -61,7 +47,9 @@ def constant(cls: Type) -> IterableConstant:
         cls.__annotations__[name] = type(value)
 
     output_class = dataclass(frozen=True, init=False)(cls)
-    if not hasattr(cls, "__iter__"):
-        output_class = _append_fields_iterator(output_class)
+    try:
+        output_class.__iter__
+    except AttributeError:
+        output_class.__iter__ = _default_iterator
     assert isinstance(output_class, Callable), "Expected class to be callable to allow instantiation"
     return output_class()
