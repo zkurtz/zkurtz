@@ -7,8 +7,17 @@ from pytest import raises
 from zkurtz.classtools.constantclass import constant
 
 
+class Base:
+    """Base class for demonstration."""
+
+    @property
+    def greetings(self) -> str:
+        """Return a greeting message."""
+        return "Hello, world!"
+
+
 @constant
-class MyPaths:
+class MyPaths(Base):
     """Demo: A frozen class with constant values."""
 
     inputs = "input/path"
