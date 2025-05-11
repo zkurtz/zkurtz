@@ -1,10 +1,9 @@
 """Demo for the constant class."""
 
-from dataclasses import FrozenInstanceError
-
+from attr.exceptions import FrozenInstanceError
 from pytest import raises
 
-from zkurtz.classtools.constantclass import constant
+from zkurtz.classtools.constantclass import frozen_instance, iterable_frozen_instance
 
 
 class Base:
@@ -16,12 +15,19 @@ class Base:
         return "Hello, world!"
 
 
-@constant
+@iterable_frozen_instance
 class MyPaths(Base):
     """Demo: A frozen class with constant values."""
 
     inputs = "input/path"
     outputs: str = "output/path"
+
+
+@frozen_instance
+class Simple:
+    """A minimal frozen instance that is NOT iterable."""
+
+    key = "value"
 
 
 def demo() -> None:
@@ -48,6 +54,10 @@ def demo() -> None:
     assert isinstance(MyPaths, object)
     with raises(TypeError):
         MyPaths()  # pyright: ignore[reportCallIssue]
+
+    print("A simple `frozen_instance` class is not iterable")
+    with raises(TypeError):
+        dict(Simple)
 
 
 if __name__ == "__main__":

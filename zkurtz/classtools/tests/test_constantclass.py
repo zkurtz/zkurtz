@@ -1,18 +1,17 @@
-from dataclasses import FrozenInstanceError
-
+from attr.exceptions import FrozenInstanceError
 from pytest import raises
 
-from zkurtz.classtools.demo import MyPaths
+from zkurtz.classtools.demo import MyPaths, Simple
 
 
 def test_constant() -> None:
     """Demonstrate the use of the constant class."""
 
-    with raises(FrozenInstanceError):
-        MyPaths.inputs = "new/path"  # pyright: ignore[reportAttributeAccessIssue]
-
     with raises(TypeError):
         MyPaths()  # pyright: ignore[reportCallIssue]
+
+    with raises(FrozenInstanceError):
+        MyPaths.inputs = "new/path"  # pyright: ignore[reportAttributeAccessIssue]
 
     # The class inherited from the "Base" class with a greetings property:
     assert MyPaths.greetings == "Hello, world!"
@@ -22,3 +21,7 @@ def test_constant() -> None:
         "inputs": "input/path",
         "outputs": "output/path",
     }
+
+    print("A simple `frozen_instance` class is not iterable")
+    with raises(TypeError):
+        dict(Simple)
