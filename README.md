@@ -1,3 +1,3 @@
 # zkurtz
 
-My personal python code ideas incubator.
+Where Zach Kurtz writes code.
