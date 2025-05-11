@@ -5,6 +5,9 @@ description = "Python code ideas incubator."
 authors = [{ name = "Zach Kurtz", email = "zkurtz@gmail.com" }]
 readme = "README.md"
 requires-python = ">=3.12"
+dependencies = [
+    "attrs>=25.3.0",
+]
 
 [dependency-groups]
 dev = [

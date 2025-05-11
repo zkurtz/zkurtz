@@ -9,8 +9,9 @@ Illustrate the functionality in this module by running the demo:
     python -m zkurtz.classtools.demo
 """
 
-from dataclasses import dataclass, fields
 from typing import Any, Callable, Iterator, Type
+
+from attrs import fields, frozen
 
 
 def _get_simple_attributes(cls: Type) -> list[str]:
@@ -32,13 +33,13 @@ def _get_simple_attributes(cls: Type) -> list[str]:
     return names
 
 
-def _default_iterator(self: Any) -> Iterator[tuple[str, Any]]:
+def _iterator_over_fields(self: Any) -> Iterator[tuple[str, Any]]:
     """Iterate over the field names of the dataclass."""
-    for field in fields(self):
+    for field in fields(type(self)):
         yield field.name, field.default
 
 
-def constant(cls: Any) -> Any:
+def frozen_instance(cls: Any) -> Any:
     """Decorator to render a class declaration into into a frozen class instance."""
     for name in _get_simple_attributes(cls):
         if name in cls.__annotations__:
@@ -46,10 +47,12 @@ def constant(cls: Any) -> Any:
         value = getattr(cls, name)
         cls.__annotations__[name] = type(value)
 
-    output_class = dataclass(frozen=True, init=False)(cls)
-    try:
-        output_class.__iter__
-    except AttributeError:
-        output_class.__iter__ = _default_iterator
+    output_class = frozen(init=False)(cls)
     assert isinstance(output_class, Callable), "Expected class to be callable to allow instantiation"
     return output_class()
+
+
+def iterable_frozen_instance(cls: Any) -> Any:
+    """Decorator to render an iterable frozen instance."""
+    cls.__iter__ = _iterator_over_fields
+    return frozen_instance(cls)
